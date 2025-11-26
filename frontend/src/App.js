@@ -1,3 +1,4 @@
+require('dotenv').config();
 import React, { useState, useCallback } from "react";
 import {
   BrowserRouter as Router,
