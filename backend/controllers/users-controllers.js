@@ -25,7 +25,9 @@ const signup = async (req, res, next) => {
       new HttpError("Invalid inputs passed, please check your data.", 422)
     );
   }
-  const { name, email, password, places } = req.body;
+  const { firstName, lastName, mobileNumber, email, password, places } = req.body;
+
+  console.log("Signup received:", { firstName, lastName, mobileNumber, email, password, places });
 
   let existingUser;
   try {
@@ -47,7 +49,8 @@ const signup = async (req, res, next) => {
   }
 
   const createdUser = new User({
-    name,
+    name: `${firstName} ${lastName}`,
+    mobileNumber,
     email,
     image:
       "https://img.freepik.com/free-vector/user-circles-set_78370-4704.jpg?semt=ais_incoming&w=740&q=80",
@@ -57,6 +60,7 @@ const signup = async (req, res, next) => {
 
   try {
     await createdUser.save();
+    console.log("--- USER SIGNED UP ---", createdUser.id);
   } catch (err) {
     console.error("--- SIGNUP FAILED ---", err);
 
@@ -70,11 +74,15 @@ const signup = async (req, res, next) => {
 const login = async (req, res, next) => {
   const { email, password } = req.body;
 
+  console.log("Login attempt for:", email);
+
   let existingUser;
 
   try {
-    existingUser = await User.findOne({ email: email });
+    existingUser = await User.findOne({ email });
+    console.log("Found user:", existingUser);
   } catch (err) {
+    console.error("--- LOGIN FAILED ---", err.message);
     const error = new HttpError(
       "Logging in failed, please try again later.",
       500
@@ -83,6 +91,7 @@ const login = async (req, res, next) => {
   }
 
   if (!existingUser || existingUser.password !== password) {
+    console.warn("--- INVALID CREDENTIALS ---");
     const error = new HttpError(
       "Invalid credentials, could not log you in.",
       401
@@ -90,10 +99,11 @@ const login = async (req, res, next) => {
     return next(error);
   }
 
+  console.log("--- USER LOGGED IN ---", existingUser.name, "with ID:", existingUser.id);
+
   res.json({
     message: "Logged in!",
-    userId: existingUser.id,
-    email: existingUser.email,
+    userId: existingUser.toObject({ getters: true })
   });
 };
 

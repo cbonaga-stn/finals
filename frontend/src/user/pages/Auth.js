@@ -39,7 +39,10 @@ const Auth = () => {
       setFormData(
         {
           ...formState.inputs,
-          name: undefined,
+          firstName: undefined,
+          lastName: undefined,
+          mobileNumber: undefined,
+          confirmPassword: undefined,
         },
         formState.inputs.email.isValid && formState.inputs.password.isValid
       );
@@ -47,10 +50,10 @@ const Auth = () => {
       setFormData(
         {
           ...formState.inputs,
-          name: {
-            value: "",
-            isValid: false,
-          },
+          firstName: { value: "", isValid: false },
+          lastName: { value: "", isValid: false },
+          mobileNumber: { value: "", isValid: false},
+          confirmPassword: { value: "", isValid: false },
         },
         false
       );
@@ -82,7 +85,9 @@ const Auth = () => {
           "http://localhost:5005/api/users/signup",
           "POST",
           JSON.stringify({
-            name: formState.inputs.name.value,
+            firstName: formState.inputs.firstName.value,
+            lastName: formState.inputs.lastName.value,
+            mobileNumber: formState.inputs.mobileNumber.value,
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
           }),
@@ -104,15 +109,35 @@ const Auth = () => {
         <hr />
         <form onSubmit={authSubmitHandler}>
           {!isLoginMode && (
-            <Input
+            <>
+              <Input
+                element="input"
+                id="firstName"
+                type="text"
+                label="First Name"
+                validators={[VALIDATOR_REQUIRE()]}
+                errorText="Please enter your first name."
+                onInput={inputHandler}
+              />
+              <Input
+                element="input"
+                id="lastName"
+                type="text"
+                label="Last Name"
+                validators={[VALIDATOR_REQUIRE()]}
+                errorText="Please enter your last name."
+                onInput={inputHandler}
+              />
+              <Input
               element="input"
-              id="name"
+              id="mobileNumber"
               type="text"
-              label="Name"
+              label="Mobile Number"
               validators={[VALIDATOR_REQUIRE()]}
-              errorText="Please enter a name."
+              errorText="Please enter your mobile number."
               onInput={inputHandler}
             />
+            </>
           )}
           <Input
             element="input"

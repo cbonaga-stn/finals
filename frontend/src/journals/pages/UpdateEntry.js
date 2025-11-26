@@ -64,6 +64,8 @@ const UpdateEntry = () => {
   const entryUpdateSubmitHandler = async (event) => {
     event.preventDefault();
     try {
+      console.log("Submitting update for entry:", entryId);
+
       await sendRequest(
         `http://localhost:5005/api/journal/${entryId}`,
         "PATCH",
@@ -75,8 +77,12 @@ const UpdateEntry = () => {
           "Content-Type": "application/json",
         }
       );
+      console.log("Entry updated successfully");
+      setIsLoading(false);
       navigate("/" + auth.userId + "/journal");
-    } catch (err) {}
+    } catch (err) {
+      setIsLoading(false);
+    }
   };
 
   if (isLoading) {
